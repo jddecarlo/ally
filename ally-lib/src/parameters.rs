@@ -1,11 +1,3 @@
-/*let arg1 = Arg::new("verbosity")
-        .long("verbosity")
-        .short('v')
-        .help("Sets the verbosity of the output");
-    let _matches = command!()
-        .arg(arg1)
-        .get_matches();*/
-
 use clap::{Command, Arg, ArgMatches};
 use yaml_rust::YamlLoader;
 
@@ -32,5 +24,5 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> ArgMatches
         cmd = cmd.arg(arg);
     }
     
-    return cmd.get_matches()
+    cmd.get_matches()
 }
