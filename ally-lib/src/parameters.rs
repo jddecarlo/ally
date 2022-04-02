@@ -23,6 +23,41 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
             arg = arg.long(long_arg.as_str().ok_or(0)?);
         }
 
+        let value_name_arg = &arg_properties["value_name"];
+        if !value_name_arg.is_badvalue() {
+            arg = arg.value_name(value_name_arg.as_str().ok_or(0)?);
+        }
+
+        let help_arg = &arg_properties["help"];
+        if !help_arg.is_badvalue() {
+            arg = arg.help(help_arg.as_str().ok_or(0)?);
+        }
+
+        let long_help_arg = &arg_properties["long_help"];
+        if !long_help_arg.is_badvalue() {
+            arg = arg.long_help(long_help_arg.as_str().ok_or(0)?);
+        }
+
+        let takes_value_arg = &arg_properties["takes_value"];
+        if !takes_value_arg.is_badvalue() {
+            arg = arg.takes_value(takes_value_arg.as_bool().ok_or(0)?);
+        }
+
+        let index_arg = &arg_properties["index"];
+        if !index_arg.is_badvalue() {
+            arg = arg.index(index_arg.as_i64().ok_or(0)? as usize);
+        }
+
+        let hide_arg = &arg_properties["hide"];
+        if !hide_arg.is_badvalue() {
+            arg = arg.hide(hide_arg.as_bool().ok_or(0)?);
+        }
+
+        let conflicts_with_arg = &arg_properties["conflicts_with"];
+        if !conflicts_with_arg.is_badvalue() {
+            arg = arg.conflicts_with(conflicts_with_arg.as_str().ok_or(0)?);
+        }
+
         cmd = cmd.arg(arg);
     }
     
