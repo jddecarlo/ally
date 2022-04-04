@@ -2,7 +2,7 @@ command: {
   name: ally,
   args: [
     arg: {
-      name: verbosity,
+      id: verbosity,
       short: v,
       long: verbosity,
       help: The verbosity level,
