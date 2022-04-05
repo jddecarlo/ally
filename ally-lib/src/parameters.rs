@@ -5,11 +5,11 @@ use yaml_rust::{YamlLoader, Yaml};
 pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<ArgMatches, i32> {
     let docs = YamlLoader::load_from_str(yaml_string).map_err(| _e | { 0 })?;
     let doc = &docs[0];
-    let command_data = &doc["command"];
+    let cmd_properties = &doc["command"];
     
-    let mut cmd = Command::new(command_data["name"].as_str().ok_or(0)?);
+    let cmd = RefCell::new(Command::new(cmd_properties["name"].as_str().ok_or(0)?));
     
-    let args_data = command_data["args"].as_vec().ok_or(0)?;
+    let args_data = cmd_properties["args"].as_vec().ok_or(0)?;
     for arg_data in args_data {
         let arg_properties = &arg_data["arg"];
         let arg = RefCell::new(Arg::new(arg_properties["id"].as_str().ok_or(0)?));
@@ -124,10 +124,12 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
             }
         })?;
 
-        cmd = cmd.arg(arg.borrow().to_owned());
+        let owned_cmd = cmd.borrow().to_owned();
+        *cmd.borrow_mut() = owned_cmd.arg(arg.borrow().to_owned());
     }
-    
-    Ok(cmd.get_matches())
+
+    let owned_cmd = cmd.borrow().to_owned();
+    Ok(owned_cmd.get_matches())
 }
 
 fn set_arg_property<'a, FnSetArgVal, FnGetPropVal, TProp>(arg: &RefCell<Arg<'a>>, property: &'a Yaml, set_arg_val: FnSetArgVal, get_property_val: FnGetPropVal) -> Result<(), i32>
