@@ -7,8 +7,28 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
     let doc = &docs[0];
     let cmd_properties = &doc["command"];
     
+    // Command settings
     let cmd = RefCell::new(Command::new(cmd_properties["name"].as_str().ok_or(0)?));
+
+    set_cmd_property(&cmd, &cmd_properties["about"], Command::about, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["after_help"], Command::after_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["after_help"], Command::after_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["after_long_help"], Command::after_long_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["alias"], Command::alias, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["allow_external_subcommands"], Command::allow_external_subcommands, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["allow_hyphen_values"], Command::allow_hyphen_values, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["allow_invalid_utf8_for_external_subcommands"], Command::allow_invalid_utf8_for_external_subcommands, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["allow_missing_positional"], Command::allow_missing_positional, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["allow_negative_numbers"], Command::allow_negative_numbers, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["arg_required_else_help"], Command::arg_required_else_help, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["args_conflicts_with_subcommands"], Command::args_conflicts_with_subcommands, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["args_override_self"], Command::args_override_self, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["author"], Command::author, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["before_help"], Command::before_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["before_long_help"], Command::before_long_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["bin_name"], Command::bin_name, Yaml::as_str)?;
     
+    // Arg settings
     let args_data = cmd_properties["args"].as_vec().ok_or(0)?;
     for arg_data in args_data {
         let arg_properties = &arg_data["arg"];
@@ -131,6 +151,17 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
     let owned_cmd = cmd.borrow().to_owned();
     Ok(owned_cmd.get_matches())
 }
+
+fn set_cmd_property<'a, FnSetCmdVal, FnGetPropVal, TProp>(cmd: &RefCell<Command<'a>>, property: &'a Yaml, set_cmd_val: FnSetCmdVal, get_property_val: FnGetPropVal) -> Result<(), i32>
+    where FnSetCmdVal: FnOnce(Command<'a>, TProp) -> Command<'a>,
+    FnGetPropVal: FnOnce(&'a Yaml) -> Option<TProp> {
+        if !property.is_badvalue() {
+            let owned_cmd = cmd.borrow().to_owned();
+            *cmd.borrow_mut() = set_cmd_val(owned_cmd, get_property_val(property).ok_or(0)?);
+        }
+
+        Ok(())
+    }
 
 fn set_arg_property<'a, FnSetArgVal, FnGetPropVal, TProp>(arg: &RefCell<Arg<'a>>, property: &'a Yaml, set_arg_val: FnSetArgVal, get_property_val: FnGetPropVal) -> Result<(), i32>
     where FnSetArgVal: FnOnce(Arg<'a>, TProp) -> Arg<'a>,
