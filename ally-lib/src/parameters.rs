@@ -27,6 +27,29 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
     set_cmd_property(&cmd, &cmd_properties["before_help"], Command::before_help, Yaml::as_str)?;
     set_cmd_property(&cmd, &cmd_properties["before_long_help"], Command::before_long_help, Yaml::as_str)?;
     set_cmd_property(&cmd, &cmd_properties["bin_name"], Command::bin_name, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["disable_colored_help"], Command::disable_colored_help, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["disable_help_flag"], Command::disable_help_flag, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["disable_help_subcommand"], Command::disable_help_subcommand, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["disable_version_flag"], Command::disable_version_flag, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["display_order"], Command::display_order, | property | {
+        if let Some(i) = property.as_i64() {
+            Some(i as usize)
+        } else {
+            None
+        }
+    })?;
+    set_cmd_property(&cmd, &cmd_properties["dont_collapse_args_in_usage"], Command::dont_collapse_args_in_usage, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["dont_delimit_trailing_values"], Command::dont_delimit_trailing_values, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["help_expected"], Command::help_expected, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["help_template"], Command::help_template, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["hide"], Command::hide, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["hide_possible_values"], Command::hide_possible_values, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["ignore_errors"], Command::ignore_errors, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["infer_long_args"], Command::infer_long_args, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["infer_subcommands"], Command::infer_subcommands, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["long_about"], Command::long_about, Yaml::as_str)?;
+
+    // TODO: Add ArgGroup support, including Command.group() support..
     
     // Arg settings
     let args_data = cmd_properties["args"].as_vec().ok_or(0)?;
