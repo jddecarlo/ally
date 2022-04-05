@@ -36,6 +36,7 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
         set_arg_property(&arg, &arg_properties["hide"], Arg::hide, Yaml::as_bool)?;
         set_arg_property(&arg, &arg_properties["hide_default_value"], Arg::hide_default_value, Yaml::as_bool)?;
         set_arg_property(&arg, &arg_properties["hide_env"], Arg::hide_env, Yaml::as_bool)?;
+        set_arg_property(&arg, &arg_properties["hide_env_values"], Arg::hide_env_values, Yaml::as_bool)?;
         set_arg_property(&arg, &arg_properties["hide_long_help"], Arg::hide_long_help, Yaml::as_bool)?;
         set_arg_property(&arg, &arg_properties["hide_possible_values"], Arg::hide_possible_values, Yaml::as_bool)?;
         set_arg_property(&arg, &arg_properties["hide_short_help"], Arg::hide_short_help, Yaml::as_bool)?;
