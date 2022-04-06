@@ -31,6 +31,10 @@ command: {
 }
 ```
 
+```ad-
+Interesting!
+```
+
 The valid set of settings are as follows:
 
 - `name` (string): A unique name for the command, usually the name of the program.
@@ -156,6 +160,104 @@ The valid set of settings are as follows:
 - `long_about` (string): Sets the program’s description for the long help (`--help`).
 	
 	If `about` is not specified, this message will be displayed for `-h`.
+- `long_flag` (string): Sets the long version of the subcommand flag without the preceding `--`.
+
+	Allows the subcommand to be used as if it were an `long`.
+
+	**NOTE:** Any leading `-` characters will be stripped.
+- `long_flag_alias` (string): Add an alias, which functions as a “hidden” long flag subcommand.
+
+	This will automatically dispatch as if this subcommand was used. This is more efficient, and easier than creating multiple hidden subcommands as one only needs to check for the existence of this command, and not all variants.
+- `long_version` (string): Sets the version for the long version (`--version`) and help messages.
+- `max_term_width` (non-negative number): Sets the maximum terminal width at which to wrap help messages.
+
+	This only applies when setting the current terminal width. See `term_width` for more details.
+
+	Using `0` will ignore terminal widths and use source formatting.
+
+	**NOTE:** This setting applies globally and *not* on a per-command basis.
+- `next_help_heading` (string): Set the default section heading for future args.
+
+	This will be used for any arg that hasn’t had `help_heading` called.
+
+	This is useful if the default `OPTIONS` or `ARGS` headings are not specific enough for one’s use case.
+- `next_line_help` ([[#Boolean Values|boolean]]): Places the help string for all arguments and subcommands on the line after them.
+- `no_binary_name` ([[#Boolean Values|boolean]]): Specifies that the parser should not assume the first argument passed is the binary name.
+
+	This is normally the case when using a “daemon” style mode, or an interactive CLI where one would not normally type the binary or program name for each command.
+- `override_help` (string): Overrides generated help message (both `-h` and `--help`).
+
+	This should only be used when the auto-generated message does not suffice.
+- `override_usage` (string): Overrides the generated usage string for help and error messages.
+- `propagate_version` ([[#Boolean Values|boolean]]): Specifies to use the version of the current command for all subcommands.
+
+	Defaults to false; subcommands have independent version strings from their parents.
+
+	**Note:** Make sure you apply it as `global_setting` if you want this setting to be propagated to subcommands and sub-subcommands!
+
+	**NOTE:** This choice is propagated to all child subcommands.
+- `short_flag` (single character): Sets the short version of the subcommand flag without the preceding `-`.
+- `short_flag_alias` (single character): Add an alias, which functions as “hidden” short flag subcommand
+
+	This will automatically dispatch as if this subcommand was used. This is more efficient, and easier than creating multiple hidden subcommands as one only needs to check for the existence of this command, and not all variants.
+- `subcommand_help_heading` (string): Sets the help heading used for subcommands when printing usage and help.
+
+	By default, this is “SUBCOMMANDS”.
+- `subcommand_negates_reqs` ([[#Boolean Values|boolean]]): Allows subcommands to override all requirements of the parent command.
+
+	For example, if you had a subcommand or top level application with a required argument that is only required as long as there is no subcommand present, using this setting would allow you to set those arguments to [[#Arguments]] `required: true` and yet receive no error so long as the user uses a valid subcommand instead.
+
+	**NOTE:** This defaults to false (using subcommand does *not* negate requirements)
+- `subcommand_precedence_over_arg` ([[#Boolean Values|boolean]]): Prevent subcommands from being consumed as an arg value.
+
+	By default, if an option taking multiple values is followed by a subcommand, the subcommand will be parsed as another value.
+
+	```
+	cmd --foo val1 val2 subcommand
+			  --------- ----------
+				values   another value
+	```
+
+	This setting instructs the parser to stop when encountering a subcommand instead of greedily consuming arguments.
+
+	```
+	cmd --foo val1 val2 subcommand
+			  --------- ----------
+				values   subcommand
+	```
+
+	**Note:** Make sure you apply it as `global_setting` if you want this setting to be propagated to subcommands and sub-subcommands!
+- `subcommand_required` ([[#Boolean Values|boolean]]): If no subcommand is present at runtime, error and exit gracefully.
+- `subcommand_value_name` (string): Sets the value name used for subcommands when printing usage and help.
+
+	By default, this is “SUBCOMMAND”.
+- `term_width` (non-negative number): Sets the terminal width at which to wrap help messages.
+
+	Using `0` will ignore terminal widths and use source formatting.
+
+	Defaults to current terminal width when `wrap_help` feature flag is enabled. If the flag is disabled or it cannot be determined, the default is 100.
+
+	**NOTE:** This setting applies globally and *not* on a per-command basis.
+- `trailing_var_arg` ([[#Boolean Values|boolean]]): Specifies that the final positional argument is a “VarArg” and that the program should not attempt to parse any further args.
+
+	The values of the trailing positional argument will contain all args from itself on.
+
+	**NOTE:** The final positional argument **must** have [[#Arguments]] `multiple_values: true` or the usage string equivalent.
+- `version` (string): Sets the version for the short version (`-V`) and help messages.
+
+	If `long_version` is not specified, this message will be displayed for `--version`.
+- `visible_alias` (string): Sets a visible alias to this subcommand.
+
+	This allows the subcommand to be accessed via *either* the original name or the given alias. This is more efficient and easier than creating hidden subcommands as one only needs to check for the existence of this command and not all aliased variants.
+
+	**NOTE:** The alias defined with this method is *visible* from the help message and displayed as if it were just another regular subcommand. If looking for an alias that will not be displayed in the help message, see `alias`.
+- `visible_long_flag_alias` (string): Add an alias, which functions as a “visible” long flag subcommand.
+
+	This will automatically dispatch as if this subcommand was used. This is more efficient, and easier than creating multiple hidden subcommands as one only needs to check for the existence of this command, and not all variants.
+- `visible_short_flag_alias` (single character): Add an alias, which functions as “visible” short flag subcommand
+
+	This will automatically dispatch as if this subcommand was used. This is more efficient, and easier than creating multiple hidden subcommands as one only needs to check for the existence of this command, and not all variants.
+
 
 ### Arguments
 

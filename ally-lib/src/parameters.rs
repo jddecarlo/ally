@@ -48,6 +48,61 @@ pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<Arg
     set_cmd_property(&cmd, &cmd_properties["infer_long_args"], Command::infer_long_args, Yaml::as_bool)?;
     set_cmd_property(&cmd, &cmd_properties["infer_subcommands"], Command::infer_subcommands, Yaml::as_bool)?;
     set_cmd_property(&cmd, &cmd_properties["long_about"], Command::long_about, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["long_flag"], Command::long_flag, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["long_flag_alias"], Command::long_flag_alias, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["long_version"], Command::long_version, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["max_term_width"], Command::max_term_width, | property | {
+        if let Some(i) = property.as_i64() {
+            Some(i as usize)
+        } else {
+            None
+        }
+    })?;
+    set_cmd_property(&cmd, &cmd_properties["next_help_heading"], Command::next_help_heading, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["next_line_help"], Command::next_line_help, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["no_binary_name"], Command::no_binary_name, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["override_help"], Command::override_help, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["override_usage"], Command::override_usage, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["propagate_version"], Command::propagate_version, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["short_flag"], Command::short_flag, | property | {
+        if let Some(s) = property.as_str() {
+            s.chars().nth(0)
+        } else {
+            None
+        }
+    })?;
+    set_cmd_property(&cmd, &cmd_properties["short_flag_alias"], Command::short_flag_alias, | property | {
+        if let Some(s) = property.as_str() {
+            s.chars().nth(0)
+        } else {
+            None
+        }
+    })?;
+    set_cmd_property(&cmd, &cmd_properties["subcommand_help_heading"], Command::subcommand_help_heading, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["subcommand_negates_reqs"], Command::subcommand_negates_reqs, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["subcommand_precedence_over_arg"], Command::subcommand_precedence_over_arg, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["subcommand_required"], Command::subcommand_required, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["subcommand_value_name"], Command::subcommand_value_name, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["term_width"], Command::term_width, | property | {
+        if let Some(i) = property.as_i64() {
+            Some(i as usize)
+        } else {
+            None
+        }
+    })?;
+    set_cmd_property(&cmd, &cmd_properties["trailing_var_arg"], Command::trailing_var_arg, Yaml::as_bool)?;
+    set_cmd_property(&cmd, &cmd_properties["version"], Command::version, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["visible_alias"], Command::visible_alias, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["visible_long_flag_alias"], Command::visible_long_flag_alias, Yaml::as_str)?;
+    set_cmd_property(&cmd, &cmd_properties["visible_short_flag_alias"], Command::visible_short_flag_alias, | property | {
+        if let Some(s) = property.as_str() {
+            s.chars().nth(0)
+        } else {
+            None
+        }
+    })?;
+
+    // TODO: Add support for subcommands.
 
     // TODO: Add ArgGroup support, including Command.group() support..
     
