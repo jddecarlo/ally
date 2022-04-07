@@ -28,16 +28,20 @@ command: {
 		},
 		# ...
 	],
+	subcommands: [
+	    command: {
+			# ...
+		},
+		# ...
+	],
 }
-```
-
-```ad-
-Interesting!
 ```
 
 The valid set of settings are as follows:
 
 - `name` (string): A unique name for the command, usually the name of the program.
+- `args` ([[#Arguments]] array): The args list for this command.
+- `subcommands` ([[#Commands]] array): The list of commands that operate as subcommands of this command.
 - `about` (string): Sets the program's description for the short help (`-h`).
 - `after_help` (string): Free-form help text for after auto-generated short help (`-h`). This is often used to describe how to use the arguments, caveats to be noted, or license and contact information.
 - `after_long_help` (string): Free-form help text for after auto-generated long help (`--help`). This is often used to describe how to use the arguments, caveats to be noted, or license and contact information.

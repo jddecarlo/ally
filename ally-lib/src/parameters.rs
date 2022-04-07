@@ -123,6 +123,16 @@ fn parse_cmd_settings(doc: &Yaml) -> Result<RefCell<Command>, i32> {
         cmd.replace(owned_cmd.arg(owned_arg));
     }
 
+    let subcommands_data = cmd_properties["subcommands"].as_vec().ok_or(0)?;
+    for subcommand_data in subcommands_data {
+        let subcommand_properties = &subcommand_data["command"];
+        let subcommand = parse_cmd_settings(subcommand_properties)?;
+
+        let owned_subcommand = subcommand.borrow().to_owned();
+        let owned_cmd = cmd.borrow().to_owned();
+        cmd.replace(owned_cmd.subcommand(owned_subcommand));
+    }
+
     Ok(cmd)
 }
 
