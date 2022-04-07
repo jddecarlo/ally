@@ -108,8 +108,6 @@ fn parse_cmd_settings(doc: &Yaml) -> Result<RefCell<Command>, i32> {
         }
     })?;
 
-    // TODO: Add support for subcommands.
-
     // TODO: Add ArgGroup support, including Command.group() support..
 
     // Arg settings
