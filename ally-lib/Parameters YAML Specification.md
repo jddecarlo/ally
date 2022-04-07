@@ -269,7 +269,7 @@ Arguments are specified with a mapping named **arg** to a mapping of settings, l
 
 ```yaml
 arg: {
-	name: <val>,
+	id: <val>,
 	short: <val>,
 	long: <val>,
 	# ...
@@ -330,3 +330,37 @@ The valid set of settings are as follows:
 - `visible_short_alias` (single character): Add an alias, which functions as a visible short flag.
 
 
+### Argument Groups
+
+Argument groups are specified with a mapping named **group** to a mapping of settings, like this:
+
+```yaml
+group: {
+	id: <val>,
+	arg: <val>,
+	# ...
+}
+```
+
+The valid set of settings are as follows:
+
+- `id` (string): Sets the group name.
+- `arg` ([[#Arguments]]): Adds an [[#Arguments|arg]] to this group by `id`.
+- `conflicts_with` (string): Specify an argument or group that must **not** be present when this group is.
+
+	Exclusion (aka conflict) rules function just like arg exclusion rules. You can name other arguments or groups that must *not* be present when one of the arguments from this group are used.
+
+	**NOTE:** The name provided may be an argument or group name.
+- `multiple` ([[#Boolean Values|boolean]]): Allows more than one of the args in this group to be used. (Default: `false`)
+- `required` ([[#Boolean Values|boolean]]): Require an argument from the group to be present when parsing.
+
+	This is unless conflicting with another argument. A required group will be displayed in the usage string of the application in the format `<arg|arg2|arg3>`.
+
+	**NOTE:** This setting only applies to the current command/subcommands, and not globally.
+
+	**NOTE:** By default, `multiple` is set to `false` which when combined with `required: true` states, “One and *only one* arg must be used from this group. Use of more than one arg is an error.” Advise setting `multiple: true` which states, ’*At least* one arg from this group must be used. Using multiple is OK.“
+- `requires` (string): Specify an argument or group that must be present when this group is.
+
+	This is not to be confused with `required`. Requirement rules function just like arg requirement rules. You can name other arguments or groups that must be present when any one of the arguments from this group is used.
+
+	**NOTE:** The name provided may be an argument or group name.

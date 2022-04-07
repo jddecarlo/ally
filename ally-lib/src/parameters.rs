@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use clap::{Command, Arg, ArgMatches};
+use clap::{Command, Arg, ArgGroup, ArgMatches};
 use yaml_rust::{YamlLoader, Yaml};
 
 pub fn parse_command_line_args_from_yaml_string(yaml_string: &str) -> Result<ArgMatches, i32> {
@@ -108,8 +108,6 @@ fn parse_cmd_settings(doc: &Yaml) -> Result<RefCell<Command>, i32> {
         }
     })?;
 
-    // TODO: Add ArgGroup support, including Command.group() support..
-
     // Arg settings
     let args_data = cmd_properties["args"].as_vec().ok_or(0)?;
     for arg_data in args_data {
@@ -121,6 +119,18 @@ fn parse_cmd_settings(doc: &Yaml) -> Result<RefCell<Command>, i32> {
         cmd.replace(owned_cmd.arg(owned_arg));
     }
 
+    // ArgGroup settings
+    let groups_data = cmd_properties["groups"].as_vec().ok_or(0)?;
+    for group_data in groups_data {
+        let group_properties = &group_data["group"];
+        let group = parse_group_settings(group_properties)?;
+
+        let owned_group = group.borrow().to_owned();
+        let owned_cmd = cmd.borrow().to_owned();
+        cmd.replace(owned_cmd.group(owned_group));
+    }
+
+    // Subcommands
     let subcommands_data = cmd_properties["subcommands"].as_vec().ok_or(0)?;
     for subcommand_data in subcommands_data {
         let subcommand_properties = &subcommand_data["command"];
@@ -250,6 +260,18 @@ fn parse_arg_settings(arg_properties: &Yaml) -> Result<RefCell<Arg>, i32> {
     Ok(arg)
 }
 
+fn parse_group_settings(group_properties: &Yaml) -> Result<RefCell<ArgGroup>, i32> {
+    let group = RefCell::new(ArgGroup::new(group_properties["id"].as_str().ok_or(0)?));
+
+    set_group_property(&group, &group_properties["arg"], ArgGroup::arg, Yaml::as_str)?;
+    set_group_property(&group, &group_properties["conflicts_with"], ArgGroup::conflicts_with, Yaml::as_str)?;
+    set_group_property(&group, &group_properties["multiple"], ArgGroup::multiple, Yaml::as_bool)?;
+    set_group_property(&group, &group_properties["required"], ArgGroup::required, Yaml::as_bool)?;
+    set_group_property(&group, &group_properties["requires"], ArgGroup::requires, Yaml::as_str)?;
+
+    Ok(group)
+}
+
 fn set_cmd_property<'a, FnSetCmdVal, FnGetPropVal, TProp>(cmd: &RefCell<Command<'a>>, property: &'a Yaml, set_cmd_val: FnSetCmdVal, get_property_val: FnGetPropVal) -> Result<(), i32>
     where FnSetCmdVal: FnOnce(Command<'a>, TProp) -> Command<'a>,
     FnGetPropVal: FnOnce(&'a Yaml) -> Option<TProp> {
@@ -267,6 +289,17 @@ fn set_arg_property<'a, FnSetArgVal, FnGetPropVal, TProp>(arg: &RefCell<Arg<'a>>
     if !property.is_badvalue() {
         let owned_arg = arg.borrow().to_owned();
         *arg.borrow_mut() = set_arg_val(owned_arg, get_property_val(property).ok_or(0)?);
+    }
+
+    Ok(())
+}
+
+fn set_group_property<'a, FnSetGroupVal, FnGetPropVal, TProp>(group: &RefCell<ArgGroup<'a>>, property: &'a Yaml, set_group_val: FnSetGroupVal, get_property_val: FnGetPropVal) -> Result<(), i32>
+    where FnSetGroupVal: FnOnce(ArgGroup<'a>, TProp) -> ArgGroup<'a>,
+    FnGetPropVal: FnOnce(&'a Yaml) -> Option<TProp> {
+    if !property.is_badvalue() {
+        let owned_group = group.borrow().to_owned();
+        *group.borrow_mut() = set_group_val(owned_group, get_property_val(property).ok_or(0)?);
     }
 
     Ok(())
