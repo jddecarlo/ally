@@ -1,9 +1,12 @@
 use std::include_str;
-use ally_lib::parameters;
+use yaml_rust::YamlLoader;
+use ally_lib::command::Command;
 
 fn main() {
     let yaml_string = include_str!("args.yaml");
+    let docs = YamlLoader::load_from_str(yaml_string).unwrap();
+    let doc = &docs[0];
 
-    let matches = parameters::parse_command_line_args_from_yaml_string(yaml_string).unwrap_or_default();
-    println!("{:?}", matches);
+    let command = Command::new(doc);
+    println!("{:?}", command);
 }
