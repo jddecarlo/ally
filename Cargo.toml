@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "ally",
+    "ally_lib",
+]
