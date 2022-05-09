@@ -8,12 +8,18 @@ fn main() -> Result<(), ()> {
                 Command::new("FixPathSeparators")
                     .about("Fixes path separators in given string.")
                     .arg(arg!([PATH] "Path to fix the separators in.")
-                        .required(true))
+                        .required(false))
                     .alias("fps"))
             .get_matches();
 
     if let Some(matches) = matches.subcommand_matches("FixPathSeparators") {
-        FixPathSeparatorsCommand::new(matches.value_of("PATH").unwrap().to_string()).execute()?
+        let path = 
+            if matches.is_present("PATH") {
+                Some(matches.value_of("PATH").unwrap().to_string())
+            } else {
+                None
+            };
+        FixPathSeparatorsCommand::new(path).execute()?
     }
 
     Ok(())
