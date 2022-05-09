@@ -18,7 +18,7 @@ impl Executable<(), ()> for FixPathSeparatorsCommand {
     fn execute(&self) -> Result<(), ()> {
         let input = match &self.path {
             Some(ref path) => path.to_owned(),
-            None => read!("{}\n"),
+            None => read!("{}\0"),
         };
 
         let result;
