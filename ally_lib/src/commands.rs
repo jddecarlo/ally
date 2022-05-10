@@ -1,4 +1,6 @@
 use text_io::read;
+use crate::utilities::*;
+use crate::utilities::git::*;
 
 pub trait Executable<R, E> {
     fn execute(&self) -> Result<R, E>;
@@ -29,6 +31,22 @@ impl Executable<(), ()> for FixPathSeparatorsCommand {
         }
 
         println!("{result}");
+        Ok(())
+    }
+}
+
+pub struct GitIncomingCommand { }
+
+impl GitIncomingCommand {
+    pub fn new() -> Self {
+        Self {}
+    }
+}
+
+impl Executable<(), ()> for GitIncomingCommand {
+    fn execute(&self) -> Result<(), ()> {
+
+
         Ok(())
     }
 }
