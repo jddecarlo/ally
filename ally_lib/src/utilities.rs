@@ -2,41 +2,56 @@ use std::env;
 use std::io;
 use std::path;
 
-fn get_current_directory() -> io::Result<path::PathBuf> {
-    let current_dir = env::current_dir()?;
+pub(crate) fn get_current_directory() -> io::Result<path::PathBuf> {
+    env::current_dir()
 }
 
-fn find_git_repo_root_recursively(root_path: &path::Path) -> io::Result<path::PathBuf> {
-    let git_path = root_path.read_dir()?.find(
-        |entry| {
-            match entry {
-                Ok(ref dir) => {
-                    let path = dir.path();
-                    if path.ends_with("/.git") {
-                        true
-                    }
-                },
-                _ => false,
-            }
-        });
+pub(crate) mod git {
+    use git2;
+    use std::path;
 
-    Ok(path::PathBuf::new())
-}
-
-mod git {
-    use git2::Repository;
-    use std::path::Path;
-
-    struct Repo {
-        repository: Repository,
+    pub(crate) struct Repo {
+        repository: git2::Repository,
     }
 
     impl Repo {
-        fn open(path: &Path) -> Result<Self, git2::Error> {
-            let repository = Repository::open(path)?;
+        pub(crate) fn discover(path: Option<&path::Path>) -> Result<Self, git2::Error> {
+            let search_path = match path {
+                Some(path) => path.to_path_buf(),
+                None => super::get_current_directory().map_err(|e| git2::Error::from_str(&e.to_string()))?,
+            };
+            
+            let repository = git2::Repository::discover(search_path)?;
             Ok(Repo {
                 repository,
             })
+        }
+
+        pub(crate) fn print_incoming_revs(&self) -> Result<(), git2::Error> {
+            let branch_name = self.current_branch_name()?;
+            match branch_name {
+                Some(branch_name) => println!("{}", branch_name),
+                None => println!("Not on a named branch."),
+            };
+            Ok(())
+        }
+
+        fn current_branch_name(&self) -> Result<Option<String>, git2::Error> {
+            let head_result = self.repository.head();
+            match head_result {
+                Ok(ref head_ref) => {
+                    match head_ref.shorthand() {
+                        Some(ref name) => Ok(Some(name.to_string())),
+                        None => Ok(None),
+                    }
+                },
+                Err(e) => {
+                    match e.code() {
+                        git2::ErrorCode::UnbornBranch | git2::ErrorCode::NotFound => Ok(None),
+                        _ => return Err(e),
+                    }
+                },
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
+use std::io;
+use std::path;
 use text_io::read;
-use crate::utilities::*;
 use crate::utilities::git::*;
 
 pub trait Executable<R, E> {
@@ -35,17 +36,25 @@ impl Executable<(), ()> for FixPathSeparatorsCommand {
     }
 }
 
-pub struct GitIncomingCommand { }
+pub struct GitIncomingCommand {
+    pub path: Option<String>,
+}
 
 impl GitIncomingCommand {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(path: Option<String>) -> Self {
+        Self { path }
     }
 }
 
-impl Executable<(), ()> for GitIncomingCommand {
-    fn execute(&self) -> Result<(), ()> {
-
+impl Executable<(), io::Error> for GitIncomingCommand {
+    fn execute(&self) -> io::Result<()> {
+        let repo_search_path = match &self.path {
+            Some(ref path) => Some(path::Path::new(path)),
+            None => None,
+        };
+        
+        let repo = Repo::discover(repo_search_path).map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+        repo.print_incoming_revs().map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
 
         Ok(())
     }
