@@ -1,7 +1,6 @@
 use std::io;
-use std::path;
 use text_io::read;
-use crate::utilities::git::*;
+use crate::utilities::git;
 
 pub trait Executable<R, E> {
     fn execute(&self) -> Result<R, E>;
@@ -48,14 +47,7 @@ impl GitIncomingCommand {
 
 impl Executable<(), io::Error> for GitIncomingCommand {
     fn execute(&self) -> io::Result<()> {
-        let repo_search_path = match &self.path {
-            Some(ref path) => Some(path::Path::new(path)),
-            None => None,
-        };
-        
-        let repo = Repo::discover(repo_search_path).map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
-        repo.print_incoming_revs().map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
-
+        git::print_incoming_commits()?;
         Ok(())
     }
 }
