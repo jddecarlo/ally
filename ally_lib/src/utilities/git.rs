@@ -37,6 +37,27 @@ pub(crate) fn print_incoming_commits() -> io::Result<()> {
     Ok(())
 }
 
+pub(crate) fn print_outgoing_commits() -> io::Result<()> {
+    let branches = get_current_branch_pair();
+    if branches.is_none() {
+        println!("Failed to get branch information.");
+        return Ok(());
+    }
+
+    let branches = branches.unwrap();
+    
+    fetch()?;
+
+    let diff_output = get_diff_commits_between_branches(&branches.remote_branch, &branches.local_branch)?;
+    if diff_output.is_empty() {
+        println!("No outgoing commits.");
+    } else {
+        println!("{}", diff_output);
+    }
+    
+    Ok(())
+}
+
 fn fetch() -> io::Result<()> {
     let args = vec!["fetch"];
     let fetch_result = shell::execute_shell_command("git", &args[..], None)?;

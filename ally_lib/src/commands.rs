@@ -35,19 +35,32 @@ impl Executable<(), ()> for FixPathSeparatorsCommand {
     }
 }
 
-pub struct GitIncomingCommand {
-    pub path: Option<String>,
-}
+pub struct GitIncomingCommand { }
 
 impl GitIncomingCommand {
-    pub fn new(path: Option<String>) -> Self {
-        Self { path }
+    pub fn new() -> Self {
+        Self { }
     }
 }
 
 impl Executable<(), io::Error> for GitIncomingCommand {
     fn execute(&self) -> io::Result<()> {
         git::print_incoming_commits()?;
+        Ok(())
+    }
+}
+
+pub struct GitOutgoingCommand { }
+
+impl GitOutgoingCommand {
+    pub fn new() -> Self {
+        Self { }
+    }
+}
+
+impl Executable<(), io::Error> for GitOutgoingCommand {
+    fn execute(&self) -> io::Result<()> {
+        git::print_outgoing_commits()?;
         Ok(())
     }
 }
