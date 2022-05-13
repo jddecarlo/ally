@@ -1,7 +1,8 @@
 use std::io::{self, Write};
 use std::process::{Command, Output, Stdio};
+use crate::AllyResult;
 
-pub(crate) fn execute_shell_command(command: &str, args: &[&str], stdin_text: Option<&str>) -> io::Result<Output> {
+pub(crate) fn execute_shell_command(command: &str, args: &[&str], stdin_text: Option<&str>) -> AllyResult<Output, io::Error> {
     let mut command = Command::new(command);
     let mut child = match stdin_text {
         Some(_) => {

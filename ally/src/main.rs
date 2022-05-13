@@ -1,7 +1,9 @@
+use std::io;
 use clap::{arg, command, Command};
+use ally_lib::AllyResult;
 use ally_lib::commands::*;
 
-fn main() -> Result<(), ()> {
+fn main() -> AllyResult<(), io::Error> {
     let matches =
         command!()
             .subcommand(
@@ -31,16 +33,10 @@ fn main() -> Result<(), ()> {
             FixPathSeparatorsCommand::new(path).execute()?
         },
         Some(("GitIncoming", _sub_matches)) => {
-            match GitIncomingCommand::new().execute() {
-                Ok(_) => (),
-                Err(_) => return Err(()),
-            }
+            GitIncomingCommand::new().execute()?
         },
         Some(("GitOutgoing", _sub_matches)) => {
-            match GitOutgoingCommand::new().execute() {
-                Ok(_) => (),
-                Err(_) => return Err(()),
-            }
+            GitOutgoingCommand::new().execute()?
         },
         _ => (),
     }

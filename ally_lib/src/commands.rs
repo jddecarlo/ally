@@ -1,9 +1,11 @@
+use std::error::Error;
 use std::io;
 use text_io::read;
+use crate::AllyResult;
 use crate::utilities::git;
 
-pub trait Executable<R, E> {
-    fn execute(&self) -> Result<R, E>;
+pub trait Executable<T, E: Error> {
+    fn execute(&self) -> AllyResult<T, E>;
 }
 
 pub struct FixPathSeparatorsCommand {
@@ -16,8 +18,8 @@ impl FixPathSeparatorsCommand {
     }
 }
 
-impl Executable<(), ()> for FixPathSeparatorsCommand {
-    fn execute(&self) -> Result<(), ()> {
+impl Executable<(), io::Error> for FixPathSeparatorsCommand {
+    fn execute(&self) -> AllyResult<(), io::Error> {
         let input = match &self.path {
             Some(ref path) => path.to_owned(),
             None => read!("{}\0"),
@@ -44,7 +46,7 @@ impl GitIncomingCommand {
 }
 
 impl Executable<(), io::Error> for GitIncomingCommand {
-    fn execute(&self) -> io::Result<()> {
+    fn execute(&self) -> AllyResult<(), io::Error> {
         git::print_incoming_commits()?;
         Ok(())
     }
@@ -59,7 +61,7 @@ impl GitOutgoingCommand {
 }
 
 impl Executable<(), io::Error> for GitOutgoingCommand {
-    fn execute(&self) -> io::Result<()> {
+    fn execute(&self) -> AllyResult<(), io::Error> {
         git::print_outgoing_commits()?;
         Ok(())
     }

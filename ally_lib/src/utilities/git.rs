@@ -1,5 +1,6 @@
 use std::io;
 use crate::utilities::shell;
+use crate::{AllyResult, AllyError};
 
 #[derive(Debug)]
 struct BranchPair {
@@ -16,7 +17,7 @@ impl BranchPair {
     }
 }
 
-pub(crate) fn print_incoming_commits() -> io::Result<()> {
+pub(crate) fn print_incoming_commits() -> AllyResult<(), io::Error> {
     let branches = get_current_branch_pair();
     if branches.is_none() {
         println!("Failed to get branch information.");
@@ -37,7 +38,7 @@ pub(crate) fn print_incoming_commits() -> io::Result<()> {
     Ok(())
 }
 
-pub(crate) fn print_outgoing_commits() -> io::Result<()> {
+pub(crate) fn print_outgoing_commits() -> AllyResult<(), io::Error> {
     let branches = get_current_branch_pair();
     if branches.is_none() {
         println!("Failed to get branch information.");
@@ -58,14 +59,14 @@ pub(crate) fn print_outgoing_commits() -> io::Result<()> {
     Ok(())
 }
 
-fn fetch() -> io::Result<()> {
+fn fetch() -> AllyResult<(), io::Error> {
     let args = vec!["fetch"];
     let fetch_result = shell::execute_shell_command("git", &args[..], None)?;
 
     if fetch_result.status.success() {
         Ok(())
     } else {
-        Err(io::Error::new(io::ErrorKind::Other, "Failed to fetch."))
+        Err(AllyError::new("Failed to fetch.".to_owned(), None))
     }
 }
 
@@ -100,14 +101,14 @@ fn get_current_branch_pair() -> Option<BranchPair> {
     }
 }
 
-fn get_diff_commits_between_branches(from_branch_name: &str, to_branch_name: &str) -> io::Result<String> {
+fn get_diff_commits_between_branches(from_branch_name: &str, to_branch_name: &str) -> AllyResult<String, io::Error> {
     let range = format!("{}..{}", from_branch_name, to_branch_name);
     let args = vec!["log", "--no-merges", &range];
     let log_result = shell::execute_shell_command("git", &args[..], None)?;
 
     if log_result.status.success() {
-        Ok(String::from_utf8(log_result.stdout).map_err(|_| io::Error::new(io::ErrorKind::Other, "Failed to get commits."))?)
+        Ok(String::from_utf8(log_result.stdout).map_err(|_| AllyError::new("Failed to get commits.".to_owned(), None))?)
     } else {
-        Err(io::Error::new(io::ErrorKind::Other, "Failed to get commits."))
+        Err(AllyError::new("Failed to get commits.".to_owned(), None))
     }
 }
