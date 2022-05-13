@@ -1,4 +1,6 @@
+use std::io;
 use text_io::read;
+use crate::utilities::git;
 
 pub trait Executable<R, E> {
     fn execute(&self) -> Result<R, E>;
@@ -29,6 +31,36 @@ impl Executable<(), ()> for FixPathSeparatorsCommand {
         }
 
         println!("{result}");
+        Ok(())
+    }
+}
+
+pub struct GitIncomingCommand { }
+
+impl GitIncomingCommand {
+    pub fn new() -> Self {
+        Self { }
+    }
+}
+
+impl Executable<(), io::Error> for GitIncomingCommand {
+    fn execute(&self) -> io::Result<()> {
+        git::print_incoming_commits()?;
+        Ok(())
+    }
+}
+
+pub struct GitOutgoingCommand { }
+
+impl GitOutgoingCommand {
+    pub fn new() -> Self {
+        Self { }
+    }
+}
+
+impl Executable<(), io::Error> for GitOutgoingCommand {
+    fn execute(&self) -> io::Result<()> {
+        git::print_outgoing_commits()?;
         Ok(())
     }
 }
