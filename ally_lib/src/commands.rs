@@ -66,3 +66,16 @@ impl Executable<(), io::Error> for GitOutgoingCommand {
         Ok(())
     }
 }
+
+pub struct EnvironmentCommand { }
+
+impl EnvironmentCommand {
+    pub fn new() -> Self { Self { }}
+}
+
+impl Executable<(), io:Error> for EnvironmentCommand {
+    fn execute(&self) -> AllyResult<(), io::Error> {
+        todo!();
+        Ok(())
+    }
+}

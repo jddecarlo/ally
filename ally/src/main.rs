@@ -20,6 +20,10 @@ fn main() -> AllyResult<(), io::Error> {
                 Command::new("GitOutgoing")
                     .about("Gets the outgoing changes from the current git repository.")
                     .aliases(&["go", "outgoing", "out"]))
+            .subcommand(
+                Command::new("Environment")
+                    .about("Sets up the command-line environment.")
+                    .alias("env"))
             .get_matches();
 
     match matches.subcommand() {
@@ -37,6 +41,9 @@ fn main() -> AllyResult<(), io::Error> {
         },
         Some(("GitOutgoing", _sub_matches)) => {
             GitOutgoingCommand::new().execute()?
+        },
+        Some(("Environment", _sub_matches)) => {
+            EnvironmentCommand::new().execute()?
         },
         _ => (),
     }

@@ -17,6 +17,66 @@ impl BranchPair {
     }
 }
 
+#[derive(Debug)]
+pub(crate) enum AliasScope {
+    Global,
+    System,
+    Local,
+    Worktree,
+}
+
+#[derive(Debug)]
+pub(crate) enum AliasInfo {
+    GitCommand(String),
+    PythonCommand(String),
+    AliasCommand(String),
+}
+
+#[derive(Debug)]
+pub(crate) struct Alias {
+    scope: AliasScope,
+    name: String,
+    info: AliasInfo,
+}
+
+impl Alias {
+    fn new(scope: AliasScope, name: String, info: AliasInfo) -> Alias {
+        Alias {
+            scope,
+            name,
+            info,
+        }
+    }
+}
+
+pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<(), AllyError<io::Error>> {
+    let scope_arg = match &alias.scope {
+        Global=> "--global",
+        System => "--system",
+        Local => "--local",
+        Worktree => "--worktree",
+    };
+
+    let (command, args) = match &alias.info {
+        AliasInfo::GitCommand(s) => {
+            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            ("git", args)
+        },
+        AliasInfo::PythonCommand(s) => {
+            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"!python {}\"", s)];
+            ("git", args)
+        },
+        AliasInfo::AliasCommand(s) => {
+            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            ("git", args)
+        },
+    };
+
+    shell::execute_shell_command(command, &args[..], None)?;
+
+    Ok(())
+}
+
 pub(crate) fn print_incoming_commits() -> AllyResult<(), io::Error> {
     let branches = get_current_branch_pair();
     if branches.is_none() {
