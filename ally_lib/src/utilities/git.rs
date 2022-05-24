@@ -17,7 +17,6 @@ impl BranchPair {
     }
 }
 
-#[derive(Debug)]
 pub(crate) enum AliasScope {
     Global,
     System,
@@ -25,14 +24,12 @@ pub(crate) enum AliasScope {
     Worktree,
 }
 
-#[derive(Debug)]
 pub(crate) enum AliasInfo {
     GitCommand(String),
     PythonCommand(String),
     AliasCommand(String),
 }
 
-#[derive(Debug)]
 pub(crate) struct Alias {
     scope: AliasScope,
     name: String,
@@ -51,28 +48,30 @@ impl Alias {
 
 pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<(), AllyError<io::Error>> {
     let scope_arg = match &alias.scope {
-        Global=> "--global",
-        System => "--system",
-        Local => "--local",
-        Worktree => "--worktree",
-    };
+        AliasScope::Global=> "--global",
+        AliasScope::System => "--system",
+        AliasScope::Local => "--local",
+        AliasScope::Worktree => "--worktree",
+    }.to_owned();
 
+    let config_command = "config".to_owned();
     let (command, args) = match &alias.info {
         AliasInfo::GitCommand(s) => {
-            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
             ("git", args)
         },
         AliasInfo::PythonCommand(s) => {
-            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"!python {}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"!python {}\"", s)];
             ("git", args)
         },
         AliasInfo::AliasCommand(s) => {
-            let args = vec!["config", scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
             ("git", args)
         },
     };
 
-    shell::execute_shell_command(command, &args[..], None)?;
+    let arg_refs: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+    shell::execute_shell_command(command, &arg_refs[..], None)?;
 
     Ok(())
 }

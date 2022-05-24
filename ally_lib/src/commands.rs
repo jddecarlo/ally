@@ -73,9 +73,8 @@ impl EnvironmentCommand {
     pub fn new() -> Self { Self { }}
 }
 
-impl Executable<(), io:Error> for EnvironmentCommand {
+impl Executable<(), io::Error> for EnvironmentCommand {
     fn execute(&self) -> AllyResult<(), io::Error> {
         todo!();
-        Ok(())
     }
 }

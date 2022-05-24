@@ -1,8 +1,9 @@
+use std::ffi::OsStr;
 use std::io::{self, Write};
 use std::process::{Command, Output, Stdio};
-use crate::{AllyError, AllyResult};
+use crate::AllyResult;
 
-pub(crate) fn execute_shell_command(command: &str, args: &[&str], stdin_text: Option<&str>) -> AllyResult<Output, io::Error> {
+pub(crate) fn execute_shell_command<T: AsRef<OsStr>>(command: T, args: &[T], stdin_text: Option<T>) -> AllyResult<Output, io::Error> {
     let mut command = Command::new(command);
     let mut child = match stdin_text {
         Some(_) => {
@@ -22,7 +23,7 @@ pub(crate) fn execute_shell_command(command: &str, args: &[&str], stdin_text: Op
     
     if let Some(stdin_text) = stdin_text {
         if let Some(mut stdin) = child.stdin.take() {
-            stdin.write_all(stdin_text.as_bytes())?;
+            stdin.write_all(stdin_text.as_ref().to_string_lossy().as_bytes())?;
         }
     }
 
