@@ -22,6 +22,8 @@ fn main() -> AllyResult<(), io::Error> {
                     .aliases(&["go", "outgoing", "out"]))
             .subcommand(
                 Command::new("Environment")
+                    .arg(arg!([PATH] "Path containing config files.")
+                        .required(true))
                     .about("Sets up the command-line environment.")
                     .alias("env"))
             .get_matches();
@@ -42,8 +44,14 @@ fn main() -> AllyResult<(), io::Error> {
         Some(("GitOutgoing", _sub_matches)) => {
             GitOutgoingCommand::new().execute()?
         },
-        Some(("Environment", _sub_matches)) => {
-            EnvironmentCommand::new().execute()?
+        Some(("Environment", sub_matches)) => {
+            let path = 
+                if sub_matches.is_present("PATH") {
+                    Some(sub_matches.value_of("PATH").unwrap().to_string())
+                } else {
+                    None
+                };
+            EnvironmentCommand::new(path).execute()?
         },
         _ => (),
     }

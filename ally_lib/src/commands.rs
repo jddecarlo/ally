@@ -67,10 +67,14 @@ impl Executable<(), io::Error> for GitOutgoingCommand {
     }
 }
 
-pub struct EnvironmentCommand { }
+pub struct EnvironmentCommand {
+    pub path: Option<String>,
+ }
 
 impl EnvironmentCommand {
-    pub fn new() -> Self { Self { }}
+    pub fn new(path: Option<String>) -> Self {
+        Self { path }
+    }
 }
 
 impl Executable<(), io::Error> for EnvironmentCommand {

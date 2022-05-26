@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 ally_lib = { path = "../ally_lib" }
 clap = { version = "3.1.17", features = ["cargo"] }
+toml = "0.5.9"
