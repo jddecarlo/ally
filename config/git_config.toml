@@ -1,6 +1,0 @@
-[aliases]
-
-    [aliases.global]
-    name = "bdiff"
-    type = "git"
-    args = "difftool --dir-diff --no-symlinks"

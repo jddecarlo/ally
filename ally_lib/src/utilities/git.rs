@@ -1,4 +1,3 @@
-use std::io;
 use crate::utilities::shell;
 use crate::{AllyResult, AllyError};
 
@@ -31,13 +30,13 @@ pub(crate) enum AliasInfo {
 }
 
 pub(crate) struct Alias {
-    scope: AliasScope,
-    name: String,
-    info: AliasInfo,
+    pub(crate) scope: AliasScope,
+    pub(crate) name: String,
+    pub(crate) info: AliasInfo,
 }
 
 impl Alias {
-    fn new(scope: AliasScope, name: String, info: AliasInfo) -> Alias {
+    pub(crate) fn new(scope: AliasScope, name: String, info: AliasInfo) -> Alias {
         Alias {
             scope,
             name,
@@ -46,7 +45,7 @@ impl Alias {
     }
 }
 
-pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<(), AllyError<io::Error>> {
+pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<()> {
     let scope_arg = match &alias.scope {
         AliasScope::Global=> "--global",
         AliasScope::System => "--system",
@@ -76,7 +75,7 @@ pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<(), AllyError<io::Error
     Ok(())
 }
 
-pub(crate) fn print_incoming_commits() -> AllyResult<(), io::Error> {
+pub(crate) fn print_incoming_commits() -> AllyResult<()> {
     let branches = get_current_branch_pair();
     if branches.is_none() {
         println!("Failed to get branch information.");
@@ -97,7 +96,7 @@ pub(crate) fn print_incoming_commits() -> AllyResult<(), io::Error> {
     Ok(())
 }
 
-pub(crate) fn print_outgoing_commits() -> AllyResult<(), io::Error> {
+pub(crate) fn print_outgoing_commits() -> AllyResult<()> {
     let branches = get_current_branch_pair();
     if branches.is_none() {
         println!("Failed to get branch information.");
@@ -118,14 +117,14 @@ pub(crate) fn print_outgoing_commits() -> AllyResult<(), io::Error> {
     Ok(())
 }
 
-fn fetch() -> AllyResult<(), io::Error> {
+fn fetch() -> AllyResult<()> {
     let args = vec!["fetch"];
     let fetch_result = shell::execute_shell_command("git", &args[..], None)?;
 
     if fetch_result.status.success() {
         Ok(())
     } else {
-        Err(AllyError::new("Failed to fetch.".to_owned(), None))
+        Err(AllyError::GitFailedToFetch)
     }
 }
 
@@ -160,14 +159,14 @@ fn get_current_branch_pair() -> Option<BranchPair> {
     }
 }
 
-fn get_diff_commits_between_branches(from_branch_name: &str, to_branch_name: &str) -> AllyResult<String, io::Error> {
+fn get_diff_commits_between_branches(from_branch_name: &str, to_branch_name: &str) -> AllyResult<String> {
     let range = format!("{}..{}", from_branch_name, to_branch_name);
     let args = vec!["log", "--no-merges", &range];
     let log_result = shell::execute_shell_command("git", &args[..], None)?;
 
     if log_result.status.success() {
-        Ok(String::from_utf8(log_result.stdout).map_err(|_| AllyError::new("Failed to get commits.".to_owned(), None))?)
+        Ok(String::from_utf8(log_result.stdout).map_err(|_| AllyError::GitFailedToGetCommits)?)
     } else {
-        Err(AllyError::new("Failed to get commits.".to_owned(), None))
+        Err(AllyError::GitFailedToGetCommits)
     }
 }

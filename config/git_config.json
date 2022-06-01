@@ -1,0 +1,10 @@
+{
+    "aliases": [
+        {
+            "name": "bdiff",
+            "scope": "global",
+            "kind": "git",
+            "args": "difftool --dir-diff --no-symlinks"
+        }
+    ]
+}

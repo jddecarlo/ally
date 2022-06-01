@@ -1,9 +1,8 @@
-use std::io;
 use clap::{arg, command, Command};
 use ally_lib::AllyResult;
 use ally_lib::commands::*;
 
-fn main() -> AllyResult<(), io::Error> {
+fn main() -> AllyResult<()> {
     let matches =
         command!()
             .subcommand(

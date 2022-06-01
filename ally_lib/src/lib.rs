@@ -1,47 +1,25 @@
 pub mod commands;
 pub(crate) mod utilities;
 
-use std::convert::From;
-use std::error::Error;
-use std::fmt;
+use anyhow::Result;
+use thiserror::Error;
 
-pub type AllyResult<T, E> = Result<T, AllyError<E>>;
+pub type AllyResult<T> = Result<T, AllyError>;
 
-#[derive(Debug)]
-pub struct AllyError<T: Error> {
-    message: String,
-    source: Option<T>,
-}
+#[derive(Error, Debug)]
+pub enum AllyError {
+    #[error("Unknown error.")]
+    Unknown,
 
-impl<T: Error> AllyError<T> {
-    pub fn new(message: String, source: Option<T>) -> AllyError<T> {
-        AllyError {
-            message,
-            source,
-        }
-    }
-}
+    #[error("An IO error occurred.")]
+    IOError(#[from] std::io::Error),
 
-impl<T: Error> fmt::Display for AllyError<T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.message)
-    }
-}
+    #[error("An error occurred while parsing a JSON string.")]
+    JsonError(#[from] serde_json::Error),
 
-impl<T: Error + 'static> Error for AllyError<T> {
-    fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match &self.source {
-            Some(source) => Some(source),
-            None => None,
-        }
-    }
-}
+    #[error("Failed to fetch.")]
+    GitFailedToFetch,
 
-impl<T: Error> From<T> for AllyError<T> {
-    fn from(source: T) -> Self {
-        AllyError {
-            message: source.to_string(),
-            source: Some(source),
-        }
-    }
+    #[error("Failed to get commits.")]
+    GitFailedToGetCommits,
 }
