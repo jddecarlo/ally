@@ -56,15 +56,15 @@ pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<()> {
     let config_command = "config".to_owned();
     let (command, args) = match &alias.info {
         AliasInfo::GitCommand(s) => {
-            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("{}", s)];
             ("git", args)
         },
         AliasInfo::PythonCommand(s) => {
-            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"!python {}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("!python {}", s)];
             ("git", args)
         },
         AliasInfo::AliasCommand(s) => {
-            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("\"{}\"", s)];
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("{}", s)];
             ("git", args)
         },
     };

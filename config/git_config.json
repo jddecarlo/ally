@@ -5,6 +5,78 @@
             "scope": "global",
             "kind": "git",
             "args": "difftool --dir-diff --no-symlinks"
+        },
+        {
+            "name": "restore",
+            "scope": "global",
+            "kind": "git",
+            "args": "checkout --"
+        },
+        {
+            "name": "restoreall",
+            "scope": "global",
+            "kind": "git",
+            "args": "reset --hard"
+        },
+        {
+            "name": "alias",
+            "scope": "global",
+            "kind": "git",
+            "args": "config --get-regexp alias"
+        },
+        {
+            "name": "updateremotes",
+            "scope": "global",
+            "kind": "git",
+            "args": "remote update origin --prune"
+        },
+        {
+            "name": "unstage",
+            "scope": "global",
+            "kind": "git",
+            "args": "reset HEAD"
+        },
+        {
+            "name": "contains",
+            "scope": "global",
+            "kind": "git",
+            "args": "branch --contains"
+        },
+        {
+            "name": "cleanall",
+            "scope": "global",
+            "kind": "git",
+            "args": "clean -Xfd"
+        },
+        {
+            "name": "undolastcommit",
+            "scope": "global",
+            "kind": "git",
+            "args": "reset --soft HEAD~1"
+        },
+        {
+            "name": "accepttheirs",
+            "scope": "global",
+            "kind": "git",
+            "args": "checkout --theirs --"
+        },
+        {
+            "name": "acceptours",
+            "scope": "global",
+            "kind": "git",
+            "args": "checkout --ours --"
+        },
+        {
+            "name": "resolveconflicts",
+            "scope": "global",
+            "kind": "git",
+            "args": "mergetool"
+        },
+        {
+            "name": "resolve",
+            "scope": "global",
+            "kind": "alias",
+            "args": "resolveconflicts"
         }
     ]
 }
