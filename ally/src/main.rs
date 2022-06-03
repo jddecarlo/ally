@@ -1,9 +1,8 @@
-use std::io;
 use clap::{arg, command, Command};
 use ally_lib::AllyResult;
 use ally_lib::commands::*;
 
-fn main() -> AllyResult<(), io::Error> {
+fn main() -> AllyResult<()> {
     let matches =
         command!()
             .subcommand(
@@ -20,6 +19,12 @@ fn main() -> AllyResult<(), io::Error> {
                 Command::new("GitOutgoing")
                     .about("Gets the outgoing changes from the current git repository.")
                     .aliases(&["go", "outgoing", "out"]))
+            .subcommand(
+                Command::new("Environment")
+                    .arg(arg!([PATH] "Path containing config files.")
+                        .required(true))
+                    .about("Sets up the command-line environment.")
+                    .alias("env"))
             .get_matches();
 
     match matches.subcommand() {
@@ -37,6 +42,15 @@ fn main() -> AllyResult<(), io::Error> {
         },
         Some(("GitOutgoing", _sub_matches)) => {
             GitOutgoingCommand::new().execute()?
+        },
+        Some(("Environment", sub_matches)) => {
+            let path = 
+                if sub_matches.is_present("PATH") {
+                    Some(sub_matches.value_of("PATH").unwrap().to_string())
+                } else {
+                    None
+                };
+            EnvironmentCommand::new(path).execute()?
         },
         _ => (),
     }
