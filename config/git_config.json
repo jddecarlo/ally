@@ -77,6 +77,30 @@
             "scope": "global",
             "kind": "alias",
             "args": "resolveconflicts"
+        },
+        {
+            "name": "incoming",
+            "scope": "global",
+            "kind": "ally",
+            "args": "GitIncoming"
+        },
+        {
+            "name": "outgoing",
+            "scope": "global",
+            "kind": "ally",
+            "args": "GitOutgoing"
+        },
+        {
+            "name": "in",
+            "scope": "global",
+            "kind": "alias",
+            "args": "incoming"
+        },
+        {
+            "name": "out",
+            "scope": "global",
+            "kind": "alias",
+            "args": "outgoing"
         }
     ]
 }

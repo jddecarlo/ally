@@ -27,6 +27,7 @@ pub(crate) enum AliasInfo {
     GitCommand(String),
     PythonCommand(String),
     AliasCommand(String),
+    AllyCommand(String),
 }
 
 pub(crate) struct Alias {
@@ -65,6 +66,10 @@ pub(crate) fn add_git_alias(alias: &Alias) -> AllyResult<()> {
         },
         AliasInfo::AliasCommand(s) => {
             let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("{}", s)];
+            ("git", args)
+        },
+        AliasInfo::AllyCommand(s) => {
+            let args = vec![config_command, scope_arg, format!("alias.{}", alias.name), format!("!ally {}", s)];
             ("git", args)
         },
     };

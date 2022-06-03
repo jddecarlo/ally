@@ -96,6 +96,9 @@ impl From<git::Alias> for AliasConfig {
             git::AliasInfo::AliasCommand(s) => {
                 ("alias".to_string(), s.clone())
             },
+            git::AliasInfo::AllyCommand(s) => {
+                ("ally".to_string(), s.clone())
+            },
         };
         
         AliasConfig {
@@ -121,6 +124,7 @@ impl Into<git::Alias> for AliasConfig {
             "git" => git::AliasInfo::GitCommand(self.args),
             "python" => git::AliasInfo::PythonCommand(self.args),
             "alias" => git::AliasInfo::AliasCommand(self.args),
+            "ally" => git::AliasInfo::AllyCommand(self.args),
             _ => panic!("Unknown alias kind: {}", self.kind),
         };
 
